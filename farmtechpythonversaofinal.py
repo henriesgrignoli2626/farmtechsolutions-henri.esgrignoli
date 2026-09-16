@@ -10,8 +10,29 @@ Requisito (e): menu com entrada, saida, atualizacao, delecao de dados e opcao de
 Requisito (f): uso de rotinas de loop (while/for) e decisao (if/elif)
 """
 
+import csv
+
 # Requisito (d): vetor principal. Cada posição guarda um dicionário representando uma cultura.
 culturas = []
+
+NOME_ARQUIVO_CSV = "dados_culturas.csv"
+
+
+def exportar_csv():
+    """
+    Salva os dados das culturas num arquivo CSV, para que o app em R (item g)
+    consiga ler e calcular estatísticas (média e desvio padrão) em cima deles.
+    """
+    with open(NOME_ARQUIVO_CSV, mode="w", newline="", encoding="utf-8") as arquivo:
+        escritor = csv.writer(arquivo)
+        escritor.writerow(["nome", "area_m2", "insumo", "total_insumo_litros"])
+        for cultura in culturas:
+            escritor.writerow([
+                cultura["nome"],
+                cultura["area"],
+                cultura["insumo"],
+                cultura["total_insumo_litros"],
+            ])
 
 
 # ---------- Funções auxiliares de entrada validada ----------
@@ -106,7 +127,9 @@ def cadastrar_cultura():
     cultura["total_insumo_litros"] = calcular_insumo(cultura)
 
     culturas.append(cultura)
+    exportar_csv()
     print(f"\nCultura '{cultura['nome']}' cadastrada com sucesso na posição {len(culturas) - 1}!")
+    print(f"(Dados salvos em '{NOME_ARQUIVO_CSV}' para uso no app em R)")
 
 
 def listar_culturas():
@@ -168,6 +191,7 @@ def atualizar_cultura():
     cultura["area"] = calcular_area(cultura)
     cultura["total_insumo_litros"] = calcular_insumo(cultura)
 
+    exportar_csv()
     print("Cultura atualizada com sucesso!")
 
 
@@ -183,6 +207,7 @@ def deletar_cultura():
         return
 
     removida = culturas.pop(posicao)
+    exportar_csv()
     print(f"Cultura '{removida['nome']}' removida com sucesso!")
 
 
